@@ -1,31 +1,18 @@
+import Image from "next/image";
 import { LeadForm } from "@/components/lead-form";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
-              <svg
-                className="h-6 w-6 text-primary-foreground"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                />
-              </svg>
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">WaterWise</h1>
-              <p className="text-sm text-muted-foreground">Sustainable Irrigation Solutions</p>
-            </div>
-          </div>
+      <header>
+        <div className="container mx-auto px-4 py-4 flex justify-center">
+          <Image
+            src="/Water_Wise_logo.png"
+            alt="Water Wise Group"
+            width={200}
+            height={60}
+            priority
+          />
         </div>
       </header>
 

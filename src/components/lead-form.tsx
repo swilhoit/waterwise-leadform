@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,17 +9,59 @@ import { Progress } from "@/components/ui/progress";
 import { Form } from "@/components/ui/form";
 import { leadFormSchema, type LeadFormData, FORM_STEPS } from "@/lib/types";
 import { ContactInfoSection } from "./form-sections/contact-info";
-import { PropertyDetailsSection } from "./form-sections/property-details";
 import { WaterCollectionSection } from "./form-sections/water-collection";
 import { IrrigationMethodSection } from "./form-sections/irrigation-method";
 import { ProjectGoalsSection } from "./form-sections/project-goals";
 import { TimelineBudgetSection } from "./form-sections/timeline-budget";
 import { InstallationSupportSection } from "./form-sections/installation-support";
 import { RebatesIncentivesSection } from "./form-sections/rebates-incentives";
+import {
+  User,
+  Droplets,
+  Sprout,
+  Target,
+  Calendar,
+  Wrench,
+  BadgeDollarSign,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Send,
+} from "lucide-react";
+
+const STEP_ICONS = [User, Droplets, Sprout, Target, Calendar, Wrench, BadgeDollarSign];
 
 export function LeadForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const leadIdRef = useRef<string | null>(null);
+
+  const savePartialLead = async (data: Partial<LeadFormData>, step: number) => {
+    try {
+      const payload = {
+        ...data,
+        leadId: leadIdRef.current,
+        completedStep: step,
+        isComplete: step === FORM_STEPS.length,
+      };
+
+      // Send to your backend API
+      const response = await fetch("/api/leads", {
+        method: leadIdRef.current ? "PATCH" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.leadId && !leadIdRef.current) {
+          leadIdRef.current = result.leadId;
+        }
+      }
+    } catch (error) {
+      console.error("Failed to save lead:", error);
+    }
+  };
 
   const form = useForm<LeadFormData>({
     resolver: zodResolver(leadFormSchema),
@@ -32,11 +74,6 @@ export function LeadForm() {
       state: "",
       zip: "",
       preferredContact: "email",
-      propertyType: "residential",
-      lotSize: "",
-      lotSizeUnit: "sqft",
-      currentLandscape: "lawn",
-      existingIrrigation: "no",
       waterCollectionMethods: [],
       irrigationMethod: "not_sure",
       projectGoals: [],
@@ -65,18 +102,16 @@ export function LeadForm() {
       case 1:
         return ["fullName", "email", "phone", "street", "city", "state", "zip", "preferredContact"];
       case 2:
-        return ["propertyType", "lotSize", "lotSizeUnit", "currentLandscape", "existingIrrigation"];
-      case 3:
         return ["waterCollectionMethods"];
-      case 4:
+      case 3:
         return ["irrigationMethod"];
-      case 5:
+      case 4:
         return ["projectGoals"];
-      case 6:
+      case 5:
         return ["timeline", "budget"];
-      case 7:
+      case 6:
         return ["needInstaller", "maintenancePlan", "siteAssessment"];
-      case 8:
+      case 7:
         return ["awareOfRebates", "helpIdentifyRebates", "interestedInFinancing"];
       default:
         return [];
@@ -86,6 +121,9 @@ export function LeadForm() {
   const handleNext = async () => {
     const isValid = await validateCurrentStep();
     if (isValid && currentStep < FORM_STEPS.length) {
+      // Save partial lead data after each step
+      const currentData = form.getValues();
+      await savePartialLead(currentData, currentStep);
       setCurrentStep(currentStep + 1);
     }
   };
@@ -97,8 +135,8 @@ export function LeadForm() {
   };
 
   const onSubmit = async (data: LeadFormData) => {
-    console.log("Form submitted:", data);
-    // Here you would typically send the data to your backend
+    // Save final complete submission
+    await savePartialLead(data, FORM_STEPS.length);
     setIsSubmitted(true);
   };
 
@@ -107,18 +145,16 @@ export function LeadForm() {
       case 1:
         return <ContactInfoSection form={form} />;
       case 2:
-        return <PropertyDetailsSection form={form} />;
-      case 3:
         return <WaterCollectionSection form={form} />;
-      case 4:
+      case 3:
         return <IrrigationMethodSection form={form} />;
-      case 5:
+      case 4:
         return <ProjectGoalsSection form={form} />;
-      case 6:
+      case 5:
         return <TimelineBudgetSection form={form} />;
-      case 7:
+      case 6:
         return <InstallationSupportSection form={form} />;
-      case 8:
+      case 7:
         return <RebatesIncentivesSection form={form} />;
       default:
         return null;
@@ -127,77 +163,77 @@ export function LeadForm() {
 
   if (isSubmitted) {
     return (
-      <Card className="w-full max-w-2xl mx-auto shadow-lg">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-            <svg
-              className="h-8 w-8 text-primary"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
+      <Card className="w-full max-w-2xl mx-auto border-0 bg-gradient-to-b from-card to-card/80">
+        <CardHeader className="text-center pt-10 pb-6">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/5 ring-4 ring-primary/10">
+            <CheckCircle2 className="h-10 w-10 text-primary" />
           </div>
-          <CardTitle className="text-2xl">Thank You!</CardTitle>
-          <CardDescription className="text-base mt-2">
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            Thank You!
+          </CardTitle>
+          <CardDescription className="text-base mt-3 max-w-md mx-auto">
             Your sustainable irrigation consultation request has been submitted successfully.
             We&apos;ll be in touch within 1-2 business days.
           </CardDescription>
         </CardHeader>
-        <CardContent className="text-center">
-          <p className="text-muted-foreground mb-6">
+        <CardContent className="text-center pb-10">
+          <p className="text-muted-foreground">
             In the meantime, check your email for helpful resources about sustainable water management.
           </p>
-          <Button onClick={() => { setIsSubmitted(false); setCurrentStep(1); form.reset(); }}>
-            Submit Another Request
-          </Button>
         </CardContent>
       </Card>
     );
   }
 
+  const StepIcon = STEP_ICONS[currentStep - 1];
+
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-lg">
-      <CardHeader>
-        <div className="flex items-center justify-between mb-2">
-          <CardTitle className="text-xl">
-            Step {currentStep}: {FORM_STEPS[currentStep - 1].title}
-          </CardTitle>
-          <span className="text-sm text-muted-foreground">
-            {currentStep} of {FORM_STEPS.length}
-          </span>
+    <Card className="w-full max-w-2xl mx-auto border-0 bg-gradient-to-b from-card to-card/80 overflow-hidden">
+      <CardHeader className="pb-4">
+        <div className="flex items-center gap-4 mb-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+            <StepIcon className="h-6 w-6" />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-xl font-semibold">
+                {FORM_STEPS[currentStep - 1].title}
+              </CardTitle>
+              <span className="text-sm font-medium text-muted-foreground bg-muted px-3 py-1 rounded-full">
+                {currentStep} of {FORM_STEPS.length}
+              </span>
+            </div>
+            <CardDescription className="mt-1">{FORM_STEPS[currentStep - 1].description}</CardDescription>
+          </div>
         </div>
-        <CardDescription>{FORM_STEPS[currentStep - 1].description}</CardDescription>
-        <Progress value={progress} className="mt-4" />
+        <Progress value={progress} className="h-2" />
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-2">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {renderCurrentSection()}
 
-            <div className="flex justify-between pt-4">
+            <div className="flex justify-between pt-6 border-t">
               <Button
                 type="button"
-                variant="outline"
+                variant="ghost"
                 onClick={handlePrevious}
                 disabled={currentStep === 1}
+                className="gap-2"
               >
+                <ChevronLeft className="h-4 w-4" />
                 Previous
               </Button>
 
               {currentStep === FORM_STEPS.length ? (
-                <Button type="submit">
+                <Button type="submit" className="gap-2">
                   Submit Request
+                  <Send className="h-4 w-4" />
                 </Button>
               ) : (
-                <Button type="button" onClick={handleNext}>
+                <Button type="button" onClick={handleNext} className="gap-2">
                   Next
+                  <ChevronRight className="h-4 w-4" />
                 </Button>
               )}
             </div>
