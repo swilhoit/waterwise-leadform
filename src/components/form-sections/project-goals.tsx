@@ -26,8 +26,10 @@ interface ProjectGoalsSectionProps {
   form: UseFormReturn<LeadFormData>;
 }
 
+type ProjectGoalId = LeadFormData["projectGoals"][number];
+
 const projectGoalOptions: {
-  id: string;
+  id: ProjectGoalId;
   label: string;
   description: string;
   icon: LucideIcon;

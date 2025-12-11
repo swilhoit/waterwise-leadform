@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-
-// In-memory store for demo purposes
-// Replace with your database (e.g., Prisma, Supabase, etc.)
-const leads = new Map<string, Record<string, unknown>>();
+import { db } from "@/lib/firebase";
+import { collection, doc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 
 function generateLeadId(): string {
   return `lead_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
@@ -16,13 +14,14 @@ export async function POST(request: NextRequest) {
     const lead = {
       ...data,
       leadId,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
     };
 
-    leads.set(leadId, lead);
+    // Save to Firestore
+    await setDoc(doc(collection(db, "leads"), leadId), lead);
 
-    console.log("New lead created:", lead);
+    console.log("New lead created:", leadId);
 
     return NextResponse.json({ leadId, success: true });
   } catch (error) {
@@ -39,23 +38,21 @@ export async function PATCH(request: NextRequest) {
     const data = await request.json();
     const { leadId, ...updateData } = data;
 
-    if (!leadId || !leads.has(leadId)) {
+    if (!leadId) {
       return NextResponse.json(
-        { error: "Lead not found" },
-        { status: 404 }
+        { error: "Lead ID is required" },
+        { status: 400 }
       );
     }
 
-    const existingLead = leads.get(leadId);
-    const updatedLead = {
-      ...existingLead,
+    // Update in Firestore
+    const leadRef = doc(db, "leads", leadId);
+    await updateDoc(leadRef, {
       ...updateData,
-      updatedAt: new Date().toISOString(),
-    };
+      updatedAt: serverTimestamp(),
+    });
 
-    leads.set(leadId, updatedLead);
-
-    console.log("Lead updated:", updatedLead);
+    console.log("Lead updated:", leadId);
 
     return NextResponse.json({ leadId, success: true });
   } catch (error) {
