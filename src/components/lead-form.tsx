@@ -121,9 +121,9 @@ export function LeadForm() {
   const handleNext = async () => {
     const isValid = await validateCurrentStep();
     if (isValid && currentStep < FORM_STEPS.length) {
-      // Save partial lead data after each step
+      // Save partial lead data after each step (non-blocking)
       const currentData = form.getValues();
-      await savePartialLead(currentData, currentStep);
+      savePartialLead(currentData, currentStep);
       setCurrentStep(currentStep + 1);
     }
   };
