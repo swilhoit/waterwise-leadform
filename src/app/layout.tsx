@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "WaterWise | Sustainable Irrigation Solutions",
   description: "Get a free consultation for sustainable irrigation systems including rainwater harvesting, greywater recycling, and smart irrigation solutions.",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
