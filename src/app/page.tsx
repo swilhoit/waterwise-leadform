@@ -19,11 +19,11 @@ export default function Home() {
       <main className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-foreground mb-3">
-            Get Your Free Irrigation Consultation
+            Get Your Free Consultation + See Which Rebates You Qualify For
           </h2>
           <p className="text-muted-foreground max-w-xl mx-auto">
             Tell us about your property and goals, and we&apos;ll help you design a sustainable
-            irrigation system that saves water, money, and the environment.
+            irrigation system while identifying local rebates that can cover part of the cost.
           </p>
         </div>
 
