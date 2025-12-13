@@ -101,7 +101,7 @@ export function ContactInfoSection({ form }: ContactInfoSectionProps) {
                 City
               </FormLabel>
               <FormControl>
-                <Input placeholder="Austin" className="h-11" {...field} />
+                <Input placeholder="City" className="h-11" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -115,7 +115,7 @@ export function ContactInfoSection({ form }: ContactInfoSectionProps) {
             <FormItem>
               <FormLabel>State</FormLabel>
               <FormControl>
-                <Input placeholder="TX" className="h-11" {...field} />
+                <Input placeholder="State" className="h-11" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -129,7 +129,7 @@ export function ContactInfoSection({ form }: ContactInfoSectionProps) {
             <FormItem>
               <FormLabel>ZIP Code</FormLabel>
               <FormControl>
-                <Input placeholder="78701" className="h-11" {...field} />
+                <Input placeholder="ZIP" className="h-11" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
