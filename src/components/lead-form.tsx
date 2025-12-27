@@ -69,7 +69,6 @@ export function LeadForm() {
       fullName: "",
       email: "",
       phone: "",
-      street: "",
       city: "",
       state: "",
       zip: "",
@@ -100,7 +99,7 @@ export function LeadForm() {
   const getFieldsForStep = (step: number): (keyof LeadFormData)[] => {
     switch (step) {
       case 1:
-        return ["fullName", "email", "phone", "street", "city", "state", "zip", "preferredContact"];
+        return ["fullName", "email", "phone", "city", "state", "zip", "preferredContact"];
       case 2:
         return ["waterCollectionMethods"];
       case 3:

@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { LeadFormData } from "@/lib/types";
-import { User, Mail, Phone, MapPin, Building2, MessageSquare } from "lucide-react";
+import { User, Mail, Phone, Building2, MessageSquare } from "lucide-react";
 
 interface ContactInfoSectionProps {
   form: UseFormReturn<LeadFormData>;
@@ -72,23 +72,6 @@ export function ContactInfoSection({ form }: ContactInfoSectionProps) {
           )}
         />
       </div>
-
-      <FormField
-        control={form.control}
-        name="street"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-muted-foreground" />
-              Street Address
-            </FormLabel>
-            <FormControl>
-              <Input placeholder="123 Main Street" className="h-11" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <FormField
